@@ -1,7 +1,7 @@
 package com.dl.dao.impl;
 
 import java.io.Serializable;
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.Map;
 import com.dl.dao.WordDetailDao;
 import com.dl.entity.WordDetail;
 import com.dl.utils.ReflectionUtil;
+import com.dl.utils.db.JdbcUtil;
 
 
 /**
@@ -23,28 +24,29 @@ import com.dl.utils.ReflectionUtil;
  * 完成日期：2015年6月29日<br>
  */
 public class WordDetailDaoImpl extends BaseDaoImpl<WordDetail, Serializable> implements WordDetailDao{
-	private ResultSet rs ;// 结果集
-
-	// 在业务层处理完成后自行关闭数据连接
-	public WordDetailDaoImpl(Connection conn) {
-		super.initBaseDaoImpl(conn);
+	
+	private JdbcUtil jdbcutil = null;
+	
+	public WordDetailDaoImpl(JdbcUtil jdbcutil){
+		this.jdbcutil = jdbcutil;
 	}
 
 	@Override
 	public List<WordDetail> findAll() throws Exception {
 		List<WordDetail> list = new ArrayList<WordDetail>();
 		String sql = "select * from  [wordindex].[dbo].[wordDetail]";
-		this.setPreparedStatement(sql);
-		this.rs = this.getResultSet();
-		while (this.rs.next()) {
+		PreparedStatement statm = jdbcutil.getPreparedStatement(sql);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
 			WordDetail e = new WordDetail();
-			e.setWord(this.rs.getString("word"));
-			e.setWordF(this.rs.getString("wordF"));
-			e.setWordC(this.rs.getString("wordC"));
-			e.setWordD(this.rs.getString("wordD"));
-			e.setWordEnglish(this.rs.getString("wordEnglish"));
+			e.setWord(rs.getString("word"));
+			e.setWordF(rs.getString("wordF"));
+			e.setWordC(rs.getString("wordC"));
+			e.setWordD(rs.getString("wordD"));
+			e.setWordEnglish(rs.getString("wordEnglish"));
 			list.add(e);
 		}
+		jdbcutil.close(statm, rs);
 		return list;
 	}
 
@@ -52,17 +54,18 @@ public class WordDetailDaoImpl extends BaseDaoImpl<WordDetail, Serializable> imp
 	public List<WordDetail> findOne(String id) throws Exception {
 		List<WordDetail> list = new ArrayList<WordDetail>();
 		String sql = "select * from [wordindex].[dbo].[wordDetail]ordDetail where id ='"+id+"'";
-		this.setPreparedStatement(sql);
-		this.rs = this.getResultSet();
-		while (this.rs.next()) {
+		PreparedStatement statm = jdbcutil.getPreparedStatement(sql);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
 			WordDetail e = new WordDetail();
-			e.setWord(this.rs.getString("word"));
-			e.setWordF(this.rs.getString("wordF"));
-			e.setWordC(this.rs.getString("wordC"));
-			e.setWordD(this.rs.getString("wordD"));
-			e.setWordEnglish(this.rs.getString("wordEnglish"));
+			e.setWord(rs.getString("word"));
+			e.setWordF(rs.getString("wordF"));
+			e.setWordC(rs.getString("wordC"));
+			e.setWordD(rs.getString("wordD"));
+			e.setWordEnglish(rs.getString("wordEnglish"));
 			list.add(e);
 		}
+		jdbcutil.close(statm, rs);
 		return list;
 	}
 	
@@ -77,44 +80,42 @@ public class WordDetailDaoImpl extends BaseDaoImpl<WordDetail, Serializable> imp
 		if(id.length()>0){
 			sql += "word ='"+id+"'";
 		}
-		this.setPreparedStatement(sql);
-		this.rs = this.getResultSet();
-		while (this.rs.next()) {
+		PreparedStatement statm = jdbcutil.getPreparedStatement(sql);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
 			entity = new HashMap<String, Object>();
 			for (int i = 1; i <= fields.size(); i++) {
 				entity.put(fields.get(i-1), rs.getObject(i));
 			}
 			list.add(entity);
 		}
+		jdbcutil.close(statm, rs);
 		return list;
 	}
 
 	@Override
-	public int supdate(WordDetail wd) {
+	public int supdate(WordDetail wd) throws SQLException {
 		// 验证是否存在改记录，存在则更新
 		String valid = "select count(*) as count from [wordindex].[dbo].[wordDetail] where word='"+wd.getWord()+"'";
 		int count = 0;
-		try {
-			this.setPreparedStatement(valid);
-			this.rs = this.getResultSet();
-			while (this.rs.next()) {
-				count = rs.getInt("count");
-			}
-			if(count>0){
-				String update = "update [wordindex].[dbo].[wordDetail] set wordf='"+wd.getWordF()+"'"
-						+ " , wordc='"+wd.getWordC()+"' "
-						+ " , wordd='"+wd.getWordD()+"' "
-						+ " , wordenglish='"+wd.getWordEnglish()+"' where word='"+wd.getWord()+"' ";
-				this.setPreparedStatement(update);
-			}else{
-				String insert  = "insert into [wordindex].[dbo].[wordDetail] (id,word,wordf,wordc,wordd,wordenglish)" +
-						" values('"+wd.getId()+"','"+wd.getWord()+"','"+wd.getWordF()+"','"+wd.getWordC()+"','"+wd.getWordD()+"','"+wd.getWordEnglish()+"')";
-				this.setPreparedStatement(insert);
-			}
-			count = this.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		PreparedStatement statm = jdbcutil.getPreparedStatement(valid);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
+			count = rs.getInt("count");
 		}
+		if(count>0){
+			String update = "update [wordindex].[dbo].[wordDetail] set wordf='"+wd.getWordF()+"'"
+					+ " , wordc='"+wd.getWordC()+"' "
+					+ " , wordd='"+wd.getWordD()+"' "
+					+ " , wordenglish='"+wd.getWordEnglish()+"' where word='"+wd.getWord()+"' ";
+			statm = jdbcutil.getPreparedStatement(update);
+		}else{
+			String insert  = "insert into [wordindex].[dbo].[wordDetail] (id,word,wordf,wordc,wordd,wordenglish)" +
+					" values('"+wd.getId()+"','"+wd.getWord()+"','"+wd.getWordF()+"','"+wd.getWordC()+"','"+wd.getWordD()+"','"+wd.getWordEnglish()+"')";
+			statm = jdbcutil.getPreparedStatement(insert);
+		}
+		count = statm.executeUpdate();
+		jdbcutil.close(statm, rs);
 		return count;
 	}
 }

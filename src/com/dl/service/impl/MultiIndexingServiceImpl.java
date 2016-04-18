@@ -1,21 +1,22 @@
 package com.dl.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
 import com.dl.dao.MultiIndexingDao;
 import com.dl.entity.indexing.MultiIndexingEntity;
 import com.dl.service.MultiIndexingService;
-import com.dl.utils.db.DBConnection;
+import com.dl.utils.db.JdbcUtil;
 import com.dl.utils.factory.DaoFactory;
 
 public class MultiIndexingServiceImpl implements MultiIndexingService {
 
 	@Override
 	public List<MultiIndexingEntity> findJointEnterpriseData(Map<String,String> pars) {
-		DBConnection conn = new DBConnection();
-		// 通过工厂获取Dao,在业务层与数据层解耦合
-		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(conn.getConnection());
+		JdbcUtil jdbcutil= new JdbcUtil();
+		Connection conn = jdbcutil.getConnection();
+		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(jdbcutil);
 		List<MultiIndexingEntity> list = null;
 		try {
 			//添加手动事务管理
@@ -23,23 +24,21 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 			//执行业务
 			list = mid.findAllByMenu(Integer.valueOf(pars.get("menu")));
 			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
 			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			mid.colseResultSet();
-			mid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return list;
 	}
 
 	@Override
 	public int saveOrUpate(MultiIndexingEntity mie,int menu) {
-		DBConnection conn = new DBConnection();
-		MultiIndexingDao aid= DaoFactory.getMultiIndexingDao(conn.getConnection());
+		JdbcUtil jdbcutil= new JdbcUtil();
+		Connection conn = jdbcutil.getConnection();
+		MultiIndexingDao aid= DaoFactory.getMultiIndexingDao(jdbcutil);
 		int count = 0;
 		try {
 			//添加手动事务管理
@@ -47,15 +46,12 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 			//执行业务
 			count = aid.supdate(mie,menu);
 			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
 			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			aid.colseResultSet();
-			aid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return count;
 	}
@@ -63,9 +59,10 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 	@Override
 	public List<MultiIndexingEntity> findParentCompanyData(
 			Map<String, String> pars) {
-		DBConnection conn = new DBConnection();
+		JdbcUtil jdbcutil= new JdbcUtil();
+		Connection conn = jdbcutil.getConnection();
 		// 通过工厂获取Dao,在业务层与数据层解耦合
-		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(conn.getConnection());
+		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(jdbcutil);
 		List<MultiIndexingEntity> list = null;
 		try {
 			//添加手动事务管理
@@ -73,15 +70,12 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 			//执行业务
 			list = mid.findAllByMenu(Integer.valueOf(pars.get("menu")));
 			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
 			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			mid.colseResultSet();
-			mid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return list;
 	}
@@ -89,9 +83,10 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 	@Override
 	public List<MultiIndexingEntity> findKeypointProjectData(
 			Map<String, String> pars) {
-		DBConnection conn = new DBConnection();
+		JdbcUtil jdbcutil= new JdbcUtil();
+		Connection conn = jdbcutil.getConnection();
 		// 通过工厂获取Dao,在业务层与数据层解耦合
-		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(conn.getConnection());
+		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(jdbcutil);
 		List<MultiIndexingEntity> list = null;
 		try {
 			//添加手动事务管理
@@ -99,24 +94,21 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 			//执行业务
 			list = mid.findAllByMenu(Integer.valueOf(pars.get("menu")));
 			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
 			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			mid.colseResultSet();
-			mid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return list;
 	}
 
 	@Override
 	public List<MultiIndexingEntity> findSubCompanyData(Map<String, String> pars) {
-		DBConnection conn = new DBConnection();
-		// 通过工厂获取Dao,在业务层与数据层解耦合
-		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(conn.getConnection());
+		JdbcUtil jdbcutil= new JdbcUtil();
+		Connection conn = jdbcutil.getConnection();
+		MultiIndexingDao mid = DaoFactory.getMultiIndexingDao(jdbcutil);
 		List<MultiIndexingEntity> list = null;
 		try {
 			//添加手动事务管理
@@ -124,15 +116,12 @@ public class MultiIndexingServiceImpl implements MultiIndexingService {
 			//执行业务
 			list = mid.findAllByMenu(Integer.valueOf(pars.get("menu")));
 			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
 			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			mid.colseResultSet();
-			mid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return list;	
 	}

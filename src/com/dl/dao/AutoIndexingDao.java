@@ -1,6 +1,8 @@
 package com.dl.dao;
 
 import java.io.Serializable;
+import java.sql.SQLException;
+
 import com.dl.entity.AutoIndexing;
 
 /**
@@ -17,5 +19,5 @@ public interface AutoIndexingDao extends BaseDao<AutoIndexing, Serializable>{
 	 * @param wd
 	 * @return
 	 */
-	public int supdate(AutoIndexing wd);
+	public int supdate(AutoIndexing wd)  throws SQLException ;
 }

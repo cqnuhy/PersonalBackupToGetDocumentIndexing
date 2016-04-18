@@ -1,6 +1,7 @@
 package com.dl.dao;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,6 @@ public interface WordDetailDao extends BaseDao<WordDetail,Serializable> {
 	 * @param wd
 	 * @return
 	 */
-	public int supdate(WordDetail wd);
+	public int supdate(WordDetail wd) throws SQLException ;
 
 }

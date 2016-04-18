@@ -2,6 +2,8 @@ package com.dl.utils.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.dl.utils.Const;
@@ -16,7 +18,7 @@ import com.dl.utils.Const;
 * 作者：胡毅<br>
 * 完成日期：2015年6月29日<br>
  */
-public class DBConnection {
+public class JdbcUtil {
 	
 	private final String DB_NAME = Const.applicationConst.getProperty("DB_NAME", "wordIndex");
 	private final String DB_USER = Const.applicationConst.getProperty("DB_USER", "sa");
@@ -25,14 +27,12 @@ public class DBConnection {
 	private final String JDBC_DRIVER = Const.applicationConst.getProperty("JDBC_DRIVER");
 	private final String DB_URL = "jdbc:sqlserver://"+Const.SERVER_IP+":1433;DatabaseName="+DB_NAME;
 	private Connection connection = null;
+	private PreparedStatement statm = null;
 
 	/**
-	 * 加载JDBC驱动
-	 * @date 2015年6月29日 下午1:27:56
-	 * @author 胡毅
-	 * @return
+	 * 初始化数据库连接
 	 */
-	public DBConnection(){
+	public JdbcUtil(){
 		try {
 			Class.forName(JDBC_DRIVER);
 			this.connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -43,7 +43,7 @@ public class DBConnection {
 		}
 	}
 	/**
-	 * 获取数据库连接
+	 * 获取JDBC连接
 	 * @date 2015年6月29日 下午1:27:56
 	 * @author 胡毅
 	 * @return
@@ -57,48 +57,47 @@ public class DBConnection {
 	 * @date 2015年6月29日 下午1:28:14
 	 * @author 胡毅
 	 */
-	public void close(){
-		if(this.connection != null){
-			try {
-				this.connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+	public void close(Connection conn){
+		try {
+			if(null != conn && !conn.isClosed()){
+				conn.close();
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	/**
-	 * 是否自动提交事务
-	 * @date 2015年6月29日 下午1:27:56
-	 * @author 胡毅
-	 * @return
-	 */
-	public void setAutoCommit(Boolean flag){
+	public void rollback(Connection conn){
 		try {
-			this.connection.setAutoCommit(flag);
+			System.err.println("业务出错了，正在回滚...");
+			conn.rollback();
+			System.err.println("回滚完成。");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * 手动提交事务
-	 * @date 2015年6月29日 下午1:27:56
+	 * 获取SQL预处理对象
+	 * @date 2016年4月13日 上午10:58:03
 	 * @author 胡毅
+	 * @param sql
 	 * @return
+	 * @throws SQLException
 	 */
-	public void setCommit(){
-		try {
-			this.connection.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public PreparedStatement getPreparedStatement(String sql) throws SQLException{
+		this.statm = this.connection.prepareStatement(sql);
+		return this.statm;
 	}
 	
-	public void setRollback(){
+	public void close(PreparedStatement statm,ResultSet rs){
 		try {
-			this.connection.rollback();
-			System.out.println("操作出错，事务回滚了");
+			if(null != rs && !rs.isClosed()){
+				rs.close();
+			}
+			if(null != statm && !statm.isClosed()){
+				statm.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

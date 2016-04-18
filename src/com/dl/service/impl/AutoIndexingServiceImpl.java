@@ -1,37 +1,31 @@
 package com.dl.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
 import com.dl.dao.AutoIndexingDao;
 import com.dl.entity.AutoIndexing;
 import com.dl.service.AutoIndexingService;
-import com.dl.utils.db.DBConnection;
+import com.dl.utils.db.JdbcUtil;
 import com.dl.utils.factory.DaoFactory;
 
 public class AutoIndexingServiceImpl implements AutoIndexingService {
 
 	@Override
 	public List<AutoIndexing> findAll() {
-		DBConnection conn = new DBConnection();
-		// 通过工厂获取Dao,在业务层与数据层解耦合
-		AutoIndexingDao aid = DaoFactory.getAutoIndexingDao(conn.getConnection());
+		JdbcUtil jdbcutil = new JdbcUtil();
+		Connection conn = jdbcutil.getConnection(); 
+		AutoIndexingDao aid = DaoFactory.getAutoIndexingDao(jdbcutil);
 		List<AutoIndexing> list = null;
 		try {
-			//添加手动事务管理
 			conn.setAutoCommit(false);
-			//执行业务
 			list = aid.findAll();
-			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
-			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			aid.colseResultSet();
-			aid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return list;
 	}
@@ -44,24 +38,18 @@ public class AutoIndexingServiceImpl implements AutoIndexingService {
 
 	@Override
 	public int saveOrUpate(AutoIndexing wd) {
-		DBConnection conn = new DBConnection();
-		AutoIndexingDao aid= DaoFactory.getAutoIndexingDao(conn.getConnection());
+		JdbcUtil jdbcutil = new JdbcUtil();
+		Connection conn = jdbcutil.getConnection(); 
+		AutoIndexingDao aid= DaoFactory.getAutoIndexingDao(jdbcutil);
 		int count = 0;
 		try {
-			//添加手动事务管理
 			conn.setAutoCommit(false);
-			//执行业务
 			count = aid.supdate(wd);
-			//提交事务
-			conn.setCommit();
+			conn.commit();
 		} catch (Exception e) {
-			//回滚事务
-			conn.setRollback();
-			e.printStackTrace();
+			jdbcutil.rollback(conn);
 		} finally{
-			aid.colseResultSet();
-			aid.colsePreparedStatement();
-			conn.close();
+			jdbcutil.close(conn);
 		}
 		return count;
 	}

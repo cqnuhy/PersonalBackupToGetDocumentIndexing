@@ -1,7 +1,7 @@
 package com.dl.dao.impl;
 
 import java.io.Serializable;
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,47 +10,49 @@ import java.util.List;
 import com.dl.dao.EnterpriseInfoDao;
 import com.dl.entity.indexing.EnterpriseInfoEntity;
 import com.dl.utils.Const;
+import com.dl.utils.db.JdbcUtil;
 
 public class EnterpriseInfoDaoImpl extends BaseDaoImpl<EnterpriseInfoEntity, Serializable> implements EnterpriseInfoDao {
-	private ResultSet rs ;
 	private final String DB_NAME = Const.applicationConst.getProperty("DB_NAME");
 	// 在业务层处理完成后自行关闭数据连接
-	public EnterpriseInfoDaoImpl(Connection conn) {
-		super.initBaseDaoImpl(conn);
+	private JdbcUtil jdbcutil ;
+	public EnterpriseInfoDaoImpl(JdbcUtil jdbcutil) {
+		this.jdbcutil = jdbcutil;
 	}
 	
 	@Override
 	public List<EnterpriseInfoEntity> findAll() throws Exception {
 		List<EnterpriseInfoEntity> list = new ArrayList<EnterpriseInfoEntity>();
 		String sql = "select * from  ["+DB_NAME+"].[dbo].[需要标引的企业基本信息] ";
-		this.setPreparedStatement(sql);
-		this.rs = this.getResultSet();
-		while (this.rs.next()) {
+		PreparedStatement statm = jdbcutil.getPreparedStatement(sql);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
 			EnterpriseInfoEntity e = new EnterpriseInfoEntity();
-			e.setId(this.rs.getString(1));
-			e.setStockCode(this.rs.getString(2));
-			e.setR_DProjectKeypoint(this.rs.getString(3));
-			e.setR_DProjectKeypointIC(this.rs.getString(4));
-			e.setR_DProjectKeypointIW(this.rs.getString(5));
-			e.setCoreTechnology(this.rs.getString(6));
-			e.setCoreTechnologyIC(this.rs.getString(7));
-			e.setCoreTechnologyIW(this.rs.getString(8));
-			e.setCoreCompetitive(this.rs.getString(9));
-			e.setCoreCompetitiveIC(this.rs.getString(10));
-			e.setCoreCompetitiveIW(this.rs.getString(11));
-			e.setCoreProduct(this.rs.getString(12));
-			e.setCoreProductIC(this.rs.getString(13));
-			e.setCoreProductIW(this.rs.getString(14));
-			e.setBusinessScope(this.rs.getString(15));
-			e.setBusinessScopeIC(this.rs.getString(16));
-			e.setBusinessScopeIW(this.rs.getString(17));
+			e.setId(rs.getString(1));
+			e.setStockCode(rs.getString(2));
+			e.setR_DProjectKeypoint(rs.getString(3));
+			e.setR_DProjectKeypointIC(rs.getString(4));
+			e.setR_DProjectKeypointIW(rs.getString(5));
+			e.setCoreTechnology(rs.getString(6));
+			e.setCoreTechnologyIC(rs.getString(7));
+			e.setCoreTechnologyIW(rs.getString(8));
+			e.setCoreCompetitive(rs.getString(9));
+			e.setCoreCompetitiveIC(rs.getString(10));
+			e.setCoreCompetitiveIW(rs.getString(11));
+			e.setCoreProduct(rs.getString(12));
+			e.setCoreProductIC(rs.getString(13));
+			e.setCoreProductIW(rs.getString(14));
+			e.setBusinessScope(rs.getString(15));
+			e.setBusinessScopeIC(rs.getString(16));
+			e.setBusinessScopeIW(rs.getString(17));
 			list.add(e);
 		}
+		jdbcutil.close(statm, rs);
 		return list;
 	}
 
 	@Override
-	public int supdate(EnterpriseInfoEntity ai) {
+	public int supdate(EnterpriseInfoEntity ai) throws SQLException {
 		
 		String update="update ["+DB_NAME+"].[dbo].[需要标引的企业基本信息] " +
 						"set " +
@@ -93,21 +95,18 @@ public class EnterpriseInfoDaoImpl extends BaseDaoImpl<EnterpriseInfoEntity, Ser
 		// 验证是否存在改记录，存在则更新
 		String valid = "select count(*) as count from ["+DB_NAME+"]" +".[dbo].[需要标引的企业基本信息] where [记录id]='"+ai.getId()+"'";
 		int count = 0;
-		try {
-			this.setPreparedStatement(valid);
-			this.rs = this.getResultSet();
-			while (this.rs.next()) {
-				count = rs.getInt("count");
-			}
-			if(count>0){
-				this.setPreparedStatement(update);
-			}else{
-				this.setPreparedStatement(insert);
-			}
-			count = this.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		PreparedStatement statm = jdbcutil.getPreparedStatement(valid);
+		ResultSet rs = statm.getResultSet();
+		while (rs.next()) {
+			count = rs.getInt("count");
 		}
+		if(count>0){
+			statm = jdbcutil.getPreparedStatement(update);
+		}else{
+			statm = jdbcutil.getPreparedStatement(insert);
+		}
+		count = statm.executeUpdate();
+		jdbcutil.close(statm, rs);
 		return count;
 	}
 }

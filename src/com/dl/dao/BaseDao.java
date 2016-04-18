@@ -34,11 +34,4 @@ public interface BaseDao<T,ID extends Serializable> {
 	 */
 	public List<T> findOne(String id) throws Exception;
 	
-	/**
-	 * 关闭Statement和ResultSet
-	 * @date 2015年6月30日 上午11:01:05
-	 * @author 胡毅
-	 */
-	public void colsePreparedStatement();
-	public void colseResultSet();
 }
