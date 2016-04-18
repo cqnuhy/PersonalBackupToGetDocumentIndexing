@@ -1,0 +1,1 @@
+wsimport -s F:\workspace\dlwebservice\src -p com.dl.webservice.client -keep http://127.0.0.1:8888/dlws?wsdl
