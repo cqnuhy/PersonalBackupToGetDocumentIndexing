@@ -1,4 +1,0 @@
-BAIDU_SSP_define({"tuid" : "u2364642_0","queryid" : "acdd701ccb8b163f","placement" : {"basic" : {"cname":"csdnbaidu_cpr","conBackEnv":1,"flowType":1,"rspFormat":1,"sellType":2,"sspId":1,"tuId":9223372032562173154,"userId":1574361}
-,"container" : {"anchoredType":3,"closeType":1,"floated":{"blockType":1,"clientw":0,"contw":1000,"dockType":1,"follow":1},"height":270,"location":4,"sizeType":1,"slide":{},"width":120}
-,"fillstyle" : {"cloudTheme":{},"elements":[50],"layout":[1],"lu":{},"search":{},"styleType":2,"txt":{},"video":{}}
-,"userdefine" : "cpro_template=template_float_all_normal|cpro_lunum=6","complement_type" : 2},"extends" : "","pdb_deliv" : {"deliv_id" : "0","deliv_des" : {},"brandad" : 0},"order_deliv" : {"deliv_id" : "0","demand_id" : "0"},"rtb_deliv" : {"deliv_id" : "0","demand_id" : "2364642"}});
