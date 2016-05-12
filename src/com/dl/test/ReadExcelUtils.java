@@ -167,6 +167,7 @@ public class ReadExcelUtils {
                             rowContent = new ArrayList<String>();
                         }
                         rowContent.add(lastContents);
+                        System.out.println(lastContents.toString());
                     }
                 }else if(name.equals("c") && isNullCell){
                     if(curRow){
