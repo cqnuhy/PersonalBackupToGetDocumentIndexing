@@ -45,7 +45,6 @@ public class WriteExcel {
 //				String address = new CellReference(cell).formatAsString();
 				cell.setCellValue(address);
 			}
-
 		}
 
 //		// Rows with rownum < 900 are flushed and not accessible
