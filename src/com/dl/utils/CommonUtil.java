@@ -120,10 +120,12 @@ public class CommonUtil {
 			Map<String, Object> tmp = new HashMap<String, Object>();
 			if("HTTP".equals(action)){
 				if("wordDetail".equals(type)){
+					tmp.put("Result",root.element("Result").getTextTrim());
 					tmp.put("WordF", root.element("WordF").getTextTrim());
 					tmp.put("WordC", root.element("WordC").getTextTrim());
 					tmp.put("WordD", root.element("WordD").getTextTrim());
 					tmp.put("WordEnglish", root.element("WordEnglish").getTextTrim());
+					tmp.put("WordClc",  root.element("WordClc").getTextTrim());
 				}
 				if("autoIndexing".equals(type)){
 					tmp.put("Result",root.element("Result").getTextTrim());

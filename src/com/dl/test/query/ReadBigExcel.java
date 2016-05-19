@@ -1,7 +1,6 @@
 package com.dl.test.query;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -46,13 +44,14 @@ public class ReadBigExcel {
 	public ReadBigExcel(String filePath) throws IOException,
 			OpenXML4JException, SAXException {
 
-		String outPutFilePath = "output5w_out.xlsx";
+		String outPutFilePath = "C:\\Users\\Administrator\\Desktop\\output5w_out.xlsx";
 		FileOutputStream out = new FileOutputStream(new File(outPutFilePath));
 
 		ReadExcelUtils howto = new ReadExcelUtils();
 		List<List<String>> list = howto.processSAXReadSheet(filePath, 0);
 
 		// 读写具体excel时请保证单元格格式一致（例如，有空格的列必须都要有空格）
+//		XSSFWorkbook temp = new XSSFWorkbook(new File(outPutFilePath));
 		SXSSFWorkbook wb = new SXSSFWorkbook(1000); // keep 1000 rows in memory,
 													// exceeding rows will be
 													// flushed to disk
@@ -71,7 +70,6 @@ public class ReadBigExcel {
 			for (int rownum = 1; rownum < list.size(); rownum++) {
 				List<String> rowList = list.get(rownum);
 				System.out.println((rownum + 1) + "...");
-				String value = null;
 				String[] result = GetWordDetailValue(rowList.get(0));
 				// String[] result = getAutoIndexValue(value);
 				Row row = sh.createRow(rownum);
@@ -87,18 +85,18 @@ public class ReadBigExcel {
 							row.createCell(cellnum+2).setCellValue(result[0]);
 						} else if (result[1].equals("false")) {
 							row.createCell(cellnum+1).setCellValue("否");
+							row.createCell(cellnum+2).setCellValue("");
 						} else if (result[1].equals("error")) {
 							row.createCell(cellnum+1).setCellValue("error");
-							row.createCell(1).setCellValue("error");
+							row.createCell(cellnum+2).setCellValue("error");
 						} else {
 							row.createCell(cellnum+1).setCellValue("NULL");
 							row.createCell(cellnum+2).setCellValue("NULL");
 						}
 					}else{
-						
+						// 设置TF,MI,LE,RE
+						row.createCell(cellnum+2).setCellValue(rowList.get(cellnum));
 					}
-					// 设置TF,MI,LE,RE
-					row.createCell(cellnum+2).setCellValue(rowList.get(cellnum));
 				}
 			}
 

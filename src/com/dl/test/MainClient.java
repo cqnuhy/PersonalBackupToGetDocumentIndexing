@@ -4,10 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.xml.sax.SAXException;
+
 import com.dl.test.query.QueryEnterpriseInfo;
 import com.dl.test.query.QueryFromExcel;
+import com.dl.test.query.QueryFromExcel2;
 import com.dl.test.query.QueryMulitEntity;
 import com.dl.test.query.QuerySSLED;
+import com.dl.test.query.ReadBigExcel;
 import com.dl.utils.Const;
 
 /**
@@ -36,6 +41,7 @@ public class MainClient {
 	public static final int MENU6 = 6;
 	public static final int MENU7 = 7;
 	public static final int MENU8 = 8;
+	public static final int MENU9 = 9;
 	public static final int MENU0 = 0;
 	
 	public static void main(String[] args) {
@@ -65,6 +71,8 @@ public class MainClient {
 		System.out.println(MENU6+"、获取沪市LED专利标引");
 		System.out.println(MENU7+"、获取深市LED专利标引");
 		System.out.println(MENU8+"、风险标引");
+//		System.out.println(MENU9+"、清洗-万得EXCEL标引");
+		System.out.println(MENU9+"、DL标引EXCEL");
 		System.out.println(MENU0+"、退出程序");
 	}
 
@@ -78,6 +86,19 @@ public class MainClient {
 			new QuerySSLED("HSLED").runing();
 		}else if(menu==MENU8){
 			new QueryFromExcel("C:\\Users\\pc\\Desktop\\风险.xlsx");
+		}else if(menu==MENU9){
+//			new QueryFromExcel2("C:\\Users\\Administrator\\Desktop\\产品名称清洗_万得.xlsx");
+//			new QueryFromExcel2("C:\\Users\\Administrator\\Desktop\\output5w.xlsx");
+			try {
+				new ReadBigExcel("C:\\Users\\Administrator\\Desktop\\output5w.xlsx");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (OpenXML4JException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+//			new QueryFromExcel2("C:\\Users\\Administrator\\Desktop\\给丁亮标注.xlsx");
 		}else{
 			new Thread(new QueryMulitEntity(menu)).start();
 		}

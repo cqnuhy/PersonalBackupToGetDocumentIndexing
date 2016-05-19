@@ -1,1 +1,0 @@
-document.write('<p><a target="_blank" href="http://edu.csdn.net/"><font color="#000000"><strong>屌丝逆袭？舍我其谁！</strong></font></a> </p>');
